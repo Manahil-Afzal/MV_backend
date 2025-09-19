@@ -1,6 +1,7 @@
 
+const express = require("express"); 
 const app = require("./app");
-const connectDatabase = require("./db/database");
+const connectDatabase = require("./db/Database");
 
 
 // Handle uncaught exceptions
@@ -13,7 +14,7 @@ process.on("unhandledException", (err) => {
 //config
 if (process.env.NODE_ENV !== "PRODUCTION") {
   require("dotenv").config({
-    path: "backend/config/.env",
+    path: "config/.env",
   });
 }
 
