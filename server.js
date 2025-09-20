@@ -19,7 +19,9 @@ if (process.env.NODE_ENV !== "PRODUCTION") {
 }
 
 // connect db
-connectDatabase();
+connectDatabase().then(() => {
+    
+})
 
 
 // create server
@@ -38,3 +40,6 @@ process.on("unhandledRejection", (err) => {
     process.exit(1);
   });
 });
+
+
+
