@@ -2,7 +2,7 @@
 const express = require("express"); 
 const app = require("./app");
 const connectDatabase = require("./db/Database");
-
+// import cors from "cors";
 
 // Handle uncaught exceptions
 process.on("unhandledException", (err) => {
@@ -24,6 +24,7 @@ connectDatabase().then(() => {
 })
 
 
+
 // create server
 const server = app.listen(process.env.PORT, () => {
   console.log(
@@ -42,4 +43,10 @@ process.on("unhandledRejection", (err) => {
 });
 
 
+
+// Adding
+// app.use(cors({
+//   origin: "http://localhost:5173", 
+//   credentials: true,              
+// }));
 

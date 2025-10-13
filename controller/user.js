@@ -17,28 +17,30 @@ router.post("/create-user", upload.single("file"), async (req, res, next) => {
   const userEmail = await User.findOne({ email });
 
   if (userEmail) {
-     if (req.file) {
-    const filename = req.file.filename;
-    const filePath = `uploads/${filename}`;
-    fs.unlink(filePath, (err) => {
-      if (err) {
-        console.log(err);
-        res.status(500).json({ message: "Error deleting file" });
-      }
-    });
+    if (req.file) {
+      const filename = req.file.filename;
+      const filePath = `uploads/${filename}`;
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          console.log(err);
+          res.status(500).json({ message: "Error deleting file" });
+        }
+      });
     }
     return next(new ErrorHandler("User already exists", 400));
   }
 
   const filename = req.file.filename;
   const fileUrl = Path.join(filename);
-   const newUser = new User({
-       name, email, password, 
-   avatar: {
+  const newUser = new User({
+    name,
+    email,
+    password,
+    avatar: {
       public_id: filename,
       url: `/uploads/${filename}`,
     },
-   })
+  });
   const user = {
     name: name,
     email: email,
@@ -66,11 +68,8 @@ router.post("/create-user", upload.single("file"), async (req, res, next) => {
     return next(new ErrorHandler(error.message, 500));
   }
   await newUser.save();
-
 });
-//   }  catch (error){
-//         return next(new ErrorHandler(error.message), 400)
-//      };
+
 
 // create activation token
 const createActivationToken = (user) => {
@@ -117,8 +116,8 @@ router.post(
 router.post(
   "/login/user",
   catchAsyncErrors(async (req, res, next) => {
-       console.log("Logging in user:", req.body);
-    try {       
+    console.log("Logging in user:", req.body);
+    try {
       const { email, password } = req.body;
 
       if (!email || !password) {
@@ -131,7 +130,7 @@ router.post(
       }
 
       const isPasswordValid = await user.comparePassword(password);
-     
+
       if (!isPasswordValid) {
         return next(
           new ErrorHandler("Please provide the correct information", 400)
@@ -144,25 +143,45 @@ router.post(
   })
 );
 
-
 // load user
-router.get("/getuser", isAuthenticated, catchAsyncErrors(async(req, res, next) =>{
-     try {
-        const user = await User.findById(req.user.id);
- if (!user) {
+router.get(
+  "/getuser",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      const user = await User.findById(req.user.id);
+      if (!user) {
         return next(new ErrorHandler("User doesn't exists!", 400));
       }
-        res.status(200).json({
-          success: true,
-          user,
-        });
+      res.status(200).json({
+        success: true,
+        user,
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
 
-     } catch (error) {
-         return next(new ErrorHandler(error.message, 500));
-     }
-}));
+//logout user
+router.get(
+  "/logout",
+  isAuthenticated,
+  catchAsyncErrors(async (req, res, next) => {
+    try {
+      res.cookie("token", null, {
+        Expires: new Date(Date.now()),
+        httpOnly: true,
+      });
 
-
-
+      res.status(201).json({
+        success: true,
+        message: "Logout successful!",
+      });
+    } catch (error) {
+      return next(new ErrorHandler(error.message, 500));
+    }
+  })
+);
 
 module.exports = router;
