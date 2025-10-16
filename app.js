@@ -15,7 +15,7 @@ app.use(cors({
   credentials: true,
 }));
 
-app.use("/", express.static("uploads"));
+app.use("/uploads", express.static("uploads"));
 app.use(bodyParser.urlencoded({ extended: true, limit:"50mb"}));
 
 
@@ -30,11 +30,6 @@ if(process.env.NODE_ENV !== "PRODUCTION" ){
 // imports routes
 const user = require("./controller/user");
 const  shop = require("./controller/shop");
-
-// app.use(cors({
-//   origin: "http://localhost:5173", 
-//   credentials: true
-// }));
 
 
 app.use("/api/v2/user", user);

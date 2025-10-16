@@ -56,7 +56,7 @@ router.post("/create-shop", upload.single("file"), async (req, res, next) => {
   } catch (error) {
     return next(new ErrorHandler(error.message, 400));
   }
-  
+
 });
 // create activation token
 const createActivationToken = (seller) => {
@@ -78,6 +78,7 @@ router.post(
         activation_token,
         process.env.ACTIVATION_SECRET
       );
+     console.log(newSeller);
 
       if (!newSeller) {
         return next(new ErrorHandler("Invalid token", 400));
@@ -138,6 +139,7 @@ router.post(
     } catch (error) {
       return next(new ErrorHandler(error.message, 500));
     }
+
   })
 );
 
@@ -145,10 +147,10 @@ router.post(
 
 // load shop
 router.get(
-  "/get-shop",
-  isAuthenticated,
+  "/get-seller",
+  isSeller,
   catchAsyncErrors(async (req, res, next) => {
-    const shop = await Shop.findById(req.user.id);
+    const shop = await Shop.findById(req.seller._id);
     if (!shop) return next(new ErrorHandler("Shop not found", 400));
 
     res.status(200).json({ success: true, shop });
